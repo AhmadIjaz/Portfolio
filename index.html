@@ -201,7 +201,58 @@
     .earlier { grid-template-columns: 1fr; }
     .hero { padding: 56px 0 36px; }
     .metrics { gap: 22px; }
-    .brand .who { display: none; }
+    .brand .who { display: block; }
+    .brand .who b { font-size: 12px; }
+    .brand .who span { font-size: 10px; }
+    .bar { height: 52px; }
+
+    /* description clamp on mobile */
+    .lede-wrap { display: block; }
+    .lede {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      margin-bottom: 0 !important;
+    }
+    .lede.expanded {
+      display: block;
+      -webkit-line-clamp: unset;
+      overflow: visible;
+      margin-bottom: 0 !important;
+    }
+    .subproj p:not(.hidden) {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+    .subproj p.expanded {
+      display: block;
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+    .show-more-wrap {
+      display: block;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+    .show-more-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 500;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+    }
+  }
+
+  @media (min-width: 761px) {
+    .show-more-wrap { display: none !important; }
   }
 </style>
 </head>
@@ -236,7 +287,7 @@
           With <b>8 years</b> delivering complex software across engineering, QA, DevOps, and product — I bridge business goals and technical execution. I own roadmaps, drive requirements, and turn them into shipped, operable products, with a hands-on engineering background that lets me lead delivery from inside the build, not above it.
         </p>
         <div class="stack reveal" data-view="eng">
-          <span class="chip">PHP / CodeIgniter / Laravel</span><span class="chip">Node.js</span><span class="chip">Python / FastAPI</span><span class="chip">REST APIs</span><span class="chip">RabbitMQ</span><span class="chip">MySQL</span><span class="chip">PostgreSQL</span><span class="chip">MongoDB</span><span class="chip">React</span><span class="chip">Angular</span><span class="chip">Ionic</span><span class="chip">Docker</span><span class="chip">CI/CD</span><span class="chip">MCP</span><span class="chip">AWS</span>
+          <span class="chip">PHP / CodeIgniter / Laravel</span><span class="chip">Node.js</span><span class="chip">Python / FastAPI</span><span class="chip">REST APIs</span><span class="chip">RabbitMQ</span><span class="chip">MySQL</span><span class="chip">PostgreSQL</span><span class="chip">MongoDB</span><span class="chip">Typescript</span><span class="chip">React</span><span class="chip">Angular</span><span class="chip">Ionic</span><span class="chip">Docker</span><span class="chip">CI/CD</span><span class="chip">MCP</span><span class="chip">AWS</span>
         </div>
         <div class="stack reveal" data-view="eng" style="margin-top:6px;">
           <span style="font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:0.1em;text-transform:uppercase;align-self:center;margin-right:4px;">AI tools</span>
@@ -259,7 +310,7 @@
         </div>
         <div class="hidden" data-view="pm">
           <div class="row"><span class="v">15<span class="accent">+</span></span><span class="k">team members led</span></div>
-          <div class="row"><span class="v">3–4</span><span class="k">concurrent projects</span></div>
+          <div class="row"><span class="v">4–5</span><span class="k">concurrent projects</span></div>
           <div class="row"><span class="v">100<span class="accent">+</span></span><span class="k">sprints facilitated</span></div>
           <div class="row"><span class="v">~30<span class="accent">%</span></span><span class="k">velocity gain</span></div>
           <div class="row"><span class="v">~75<span class="accent">%</span></span><span class="k">fewer post-release defects</span></div>
@@ -278,12 +329,12 @@
         <h3>MCP + RAG agent system for the dev loop</h3>
         <span class="tag">n8n · mcp · rag · pinecone</span>
       </div>
-      <p class="lede" data-view="eng">
+      <p class="lede" data-view="eng" data-sm="1">
         An <b>n8n-built MCP (Model Context Protocol) server</b> that exposes a suite of codebase-aware tools — get Jira ticket context, cross-check code against docs, analyze PR risk, map cross-repo impact by function, suggest fix strategies, generate test checklists, prepare review comments — callable directly from <b>Cursor and Claude Code</b>. It's grounded by a <b>RAG layer</b>: an ingestion pipeline chunks every team repo (RDS, Glue, Orderlogic, Driverlogic, and more), Jira, and Confluence into per-repo <b>Pinecone</b> vector stores with OpenAI embeddings, so the tools answer from the team's real codebase and institutional knowledge rather than guesses. On an API change it flags which frontends across repos are impacted <b>without opening each one</b>; on PR completion it drafts an automated review. My part, built with the team: <b>finalizing the agent prompts</b> by reviewing and tuning responses, and <b>building the CSA APIs</b> the agent calls to perform tasks from a user's request.
       </p>
-      <p class="lede hidden" data-view="pm">
+      <p class="lede hidden" data-view="pm" data-sm="1">
         An internal AI system, built by our team, that takes load off the whole delivery cycle — an <b>n8n-based MCP server</b> with a <b>RAG layer</b> indexing our repos, Jira, and Confluence into Pinecone, so its tools understand our actual codebase. It drafts tickets, flags cross-repo impact before an API change breaks something, and auto-reviews pull requests, callable straight from the developers' editors. My contribution: <b>finalizing the prompts</b> by reviewing and tuning the agent's responses, and <b>building the APIs</b> the agent uses to carry out tasks from user requirements. The result across the team: faster developer ramp-up, fewer rejected PRs, and quicker turnaround.
-      </p>
+      </p><span class="show-more-wrap"><span class="show-more-btn" onclick="toggleSM(1,this)">Read more →</span></span>
       <div class="metrics">
         <div class="metric"><div class="n" data-count="80" data-suffix="%">80%</div><div class="l">ticket-authoring time saved</div></div>
         <div class="metric"><div class="n" data-count="50" data-suffix="%">50%</div><div class="l">dev turnaround reduction</div></div>
@@ -302,12 +353,12 @@
         <h3>Glue — unified cross-platform front end for DLCore</h3>
         <span class="tag">ionic · server-driven ui · 500+ clients</span>
       </div>
-      <p class="lede" data-view="eng">
+      <p class="lede" data-view="eng" data-sm="2">
         A single <b>Ionic</b> codebase that compiles to native iOS, native Android, and web — replacing three separate front ends (PHP/Smarty web, React Native mobile) that DLCore previously maintained in parallel. The UI is <b>server-driven</b>: the app fetches each client's templates, layouts, and settings from the backend and renders accordingly, so 500+ restaurant-delivery clients run distinct landing pages, menus, checkout flows, and tipping rules from one shared build — no per-client redeploy. Clients can preview the new front end alongside their existing one and switch when ready. Used by millions of end users daily; live and actively developed for 2+ years.
       </p>
-      <p class="lede hidden" data-view="pm">
+      <p class="lede hidden" data-view="pm" data-sm="2">
         Glue is DLCore's unified customer front end — one product replacing three legacy interfaces, serving 500+ clients and millions of daily users. As <b>the product's lead</b>, I own its roadmap and run delivery across the team: backend engineers building and updating APIs, front-end engineers shipping features and designs. It's our own product, so I also drive the requirements — surfacing updates and problems to stakeholders, then making sure they're scoped, built, and delivered. Server-driven configuration lets every client tailor their own experience without touching code.
-      </p>
+      </p><span class="show-more-wrap"><span class="show-more-btn" onclick="toggleSM(2,this)">Read more →</span></span>
       <div class="metrics">
         <div class="metric"><div class="n" data-count="500" data-suffix="+">500<span class="accent">+</span></div><div class="l">clients on one codebase</div></div>
         <div class="metric"><div class="n">3 <span class="g">&rarr;</span> 1</div><div class="l">front ends unified</div></div>
@@ -318,12 +369,13 @@
 
       <div class="subproj">
         <div class="sp-head"><span class="sp-kicker">within glue</span><h4>Deployment pipeline at scale</h4></div>
-        <p data-view="eng">
+        <p data-view="eng" data-sm="8">
           Shipping Glue to 500+ clients across multiple scaled servers was slow and fragile. I designed its deployment pipeline on <b>BitBucket Pipelines</b> with each step isolated in its own <b>Docker</b> container and the build defined in YAML; native iOS/Android builds ship through Ionic AppFlow. The key move was <b>parallelization</b> — 25+ parallel jobs each take an equal share of clients and deploy simultaneously, bringing a full rollout to <b>under an hour</b>. Releases are validated with a SmartLook session-monitoring cycle on live testers before and after each rollout.
         </p>
-        <p class="hidden" data-view="pm">
+        <p class="hidden" data-view="pm" data-sm="8">
           With 500+ clients on a fixed sprint cadence, deployment speed was a delivery risk. I <b>orchestrated the architecture</b> — parallel processing across 25+ concurrent jobs, Docker-isolated steps, BitBucket Pipelines for web and Ionic AppFlow for app stores — that cut full deployment to <b>under an hour</b>, then handed implementation to junior engineers so the team owns it going forward. Each release is de-risked with session monitoring on live testers before and after rollout.
         </p>
+        <span class="show-more-wrap"><span class="show-more-btn" onclick="toggleSM(8,this)">Read more →</span></span>
       </div>
       <div class="techrow">
         <span class="tech">Ionic</span><span class="tech">Angular</span><span class="tech">MySQL</span><span class="tech">Server-driven UI</span><span class="tech">BitBucket Pipelines</span><span class="tech">Docker</span><span class="tech">YAML</span><span class="tech">Ionic AppFlow</span><span class="tech">SmartLook</span>
@@ -336,12 +388,12 @@
         <h3>DLCore &times; GoHighLevel integration middleware</h3>
         <span class="tag">python · fastapi · postgres</span>
       </div>
-      <p class="lede" data-view="eng">
+      <p class="lede" data-view="eng" data-sm="3">
         A <b>Python FastAPI</b> middleware connecting DLCore (DeliverLogic's restaurant-delivery SaaS) with GoHighLevel (a CRM &amp; marketing-automation platform). I built and <b>published the ActiveMenus app on the GoHighLevel marketplace</b>, so clients install and connect it directly from their GHL dashboard. It handles the full <b>OAuth 2.0</b> install flow, provisions custom fields, runs a <b>paginated bulk sync</b> (500 records per page until complete), and keeps both systems live with <b>bi-directional webhooks</b> — new orders and profile updates propagate in near-real-time. Built around a four-token OAuth lifecycle (access / refresh / location / company) with automatic 24-hour refresh, and its own Postgres store for company config, install state, and sync logs.
       </p>
-      <p class="lede hidden" data-view="pm">
+      <p class="lede hidden" data-view="pm" data-sm="3">
         End-to-end delivery of an integration connecting DLCore (DeliverLogic's restaurant-delivery SaaS) with GoHighLevel (a CRM &amp; marketing-automation platform), so clients could consolidate customer data and run marketing campaigns from one place. Rather than a private point-to-point connector, I shipped it as a <b>published app on the GoHighLevel marketplace</b> — clients discover and install it themselves from their dashboard. I <b>owned it from the front</b>: requirements with the product owner and stakeholders, coordinating QA and a junior developer, through to production. Designed for operability, with an admin dashboard surfacing every sync and webhook event and failures logged and retried rather than hidden.
-      </p>
+      </p><span class="show-more-wrap"><span class="show-more-btn" onclick="toggleSM(3,this)">Read more →</span></span>
       <div class="metrics">
         <div class="metric"><div class="n" data-count="170" data-suffix="K+">170K+</div><div class="l">webhook events processed</div></div>
         <div class="metric"><div class="n">~99<span class="accent">%</span></div><div class="l">production success rate</div></div>
@@ -360,12 +412,12 @@
         <h3>Campaign Sender — queued messaging service</h3>
         <span class="tag">node.js · rabbitmq · heroku</span>
       </div>
-      <p class="lede" data-view="eng">
+      <p class="lede" data-view="eng" data-sm="4">
         A background service built from scratch in <b>Node.js</b> to send marketing campaigns (SMS, MMS, email, push) for DLCore clients. Sending thousands of messages from hundreds of clients at once would have overwhelmed the main servers, so I moved it onto a <b>RabbitMQ queue</b> with <b>multiple cooperating workers</b> pulling tasks one at a time — handling delivery and bandwidth responses without blocking. A PHP/CodeIgniter admin panel drives the composer; the service is white-labeled per client with credit-based metered billing. Deployed on Heroku Dynos to run continuously.
       </p>
-      <p class="lede hidden" data-view="pm">
+      <p class="lede hidden" data-view="pm" data-sm="4">
         A dedicated messaging service that let DLCore clients run SMS, MMS, email, and push campaigns to their customers — immediately or scheduled — with real-time preview, personalization tokens, location-based targeting, and credit-based billing. I identified the scaling risk (mass sends taking down shared infrastructure) and delivered a separate queue-based service to absorb the load reliably. White-labeled per client and live since January 2024.
-      </p>
+      </p><span class="show-more-wrap"><span class="show-more-btn" onclick="toggleSM(4,this)">Read more →</span></span>
       <div class="metrics">
         <div class="metric"><div class="n">8.9M<span class="accent">+</span></div><div class="l">contacts reached</div></div>
         <div class="metric"><div class="n">12.7M<span class="accent">+</span></div><div class="l">credits processed</div></div>
@@ -374,7 +426,7 @@
       <p class="role-line" data-view="eng"><span class="k">role</span>Sole engineer — designed and built the service from scratch</p>
       <p class="role-line hidden" data-view="pm"><span class="k">role</span>Architected and managed the team delivery end-to-end</p>
       <div class="techrow">
-        <span class="tech">Node.js</span><span class="tech">RabbitMQ</span><span class="tech">MySQL</span><span class="tech">CodeIgniter</span><span class="tech">Worker queue</span><span class="tech">Heroku</span><span class="tech">SMS / MMS / Email / Push</span>
+        <span class="tech">Typescript</span><span class="tech">Node.js</span><span class="tech">RabbitMQ</span><span class="tech">MySQL</span><span class="tech">CodeIgniter</span><span class="tech">Worker queue</span><span class="tech">Heroku</span><span class="tech">SMS / MMS / Email / Push</span>
       </div>
     </article>
 
@@ -384,12 +436,12 @@
         <h3>Storak — multi-vendor e-commerce platform</h3>
         <span class="tag">react · flutter · laravel · part-time contract</span>
       </div>
-      <p class="lede" data-view="eng">
+      <p class="lede" data-view="eng" data-sm="5">
         Joined a multi-vendor e-commerce MVP that was <b>3 months behind schedule</b>. Diagnosed the root causes — no process, daily scope changes with no documentation, no structured stakeholder communication — and rapidly turned it around: introduced <b>Agile/Scrum, Jira, and Slack</b>, set up Google Play and App Store organization accounts, managed server infrastructure, and defined a tight sprint cadence that stopped scope creep. Led a cross-functional team of <b>20</b> across engineering, design, QA, and marketing. Communicated progress directly with the <b>CTO in Pakistan</b> and the <b>CEO and co-founder in Qatar</b>. Delivered the MVP, then hired and fully onboarded a permanent PM before transitioning to a consultant role. Stack: React web, Flutter mobile, Laravel admin/vendor panels, centralized Laravel REST APIs, with user product collections + affiliate marketing as standout features.
       </p>
-      <p class="lede hidden" data-view="pm">
+      <p class="lede hidden" data-view="pm" data-sm="5">
         A delivery turnaround. Joined when the MVP was <b>3 months behind schedule</b> — caused by scope creep, no documentation, and no structured stakeholder communication. Introduced Agile/Scrum, Jira, and Slack; defined sprint cadence; limited scope; and set up the App Store and Play Store accounts required for launch. Led a cross-functional team of <b>20</b> across engineering, design, QA, and marketing. Maintained clear, structured progress communication with senior stakeholders across two countries. Delivered the MVP on the recovered timeline, then helped recruit and onboard a permanent project manager, completed a full knowledge transfer, and transitioned to a consultant role.
-      </p>
+      </p><span class="show-more-wrap"><span class="show-more-btn" onclick="toggleSM(5,this)">Read more →</span></span>
       <p class="role-line" data-view="eng"><span class="k">role</span>Part-time contract — delivery turnaround PM → technical consultant</p>
       <p class="role-line hidden" data-view="pm"><span class="k">role</span>Part-time contract — brought in to rescue a delayed MVP, delivered and handed off</p>
       <div class="techrow">
@@ -403,12 +455,12 @@
         <h3>APIX — courier order intake integration</h3>
         <span class="tag">jotform · zapier · rest api</span>
       </div>
-      <p class="lede" data-view="eng">
+      <p class="lede" data-view="eng" data-sm="6">
         A revival of DeliverLogic's discontinued courier-order service, letting any US merchant tap the delivery network from a single form. A <b>JotForm</b> captures order details, <b>Zapier</b> fires on submission, and a DLCore <b>REST API</b> creates the order. The key design choice: rather than a parallel system, courier orders are injected into the <b>same orders table</b> with a delivery-request flag — a unified schema that kept reporting, management, and downstream logic backwards-compatible. I built all three layers.
       </p>
-      <p class="lede hidden" data-view="pm">
+      <p class="lede hidden" data-view="pm" data-sm="6">
         A revival of DeliverLogic's discontinued courier-order service, letting any US merchant tap the delivery network from a single form. Rather than building a parallel system, I chose to inject courier orders into the <b>same orders table</b> with a delivery-request flag — a unified schema that kept reporting, management, and downstream logic fully backwards-compatible. Scoped and delivered all three layers end-to-end.
-      </p>
+      </p><span class="show-more-wrap"><span class="show-more-btn" onclick="toggleSM(6,this)">Read more →</span></span>
       <div class="metrics">
         <div class="metric"><div class="n" data-count="10" data-suffix="K+/mo">10K+/mo</div><div class="l">orders via APIX</div></div>
         <div class="metric"><div class="n">~7<span class="accent">%</span></div><div class="l">of platform volume</div></div>
@@ -425,12 +477,12 @@
         <h3>Google Food Ordering — crisis recovery</h3>
         <span class="tag">resilience · product strategy</span>
       </div>
-      <p class="lede" data-view="eng">
+      <p class="lede" data-view="eng" data-sm="7">
         DeliverLogic ran a direct Google Food Ordering (GFO) integration that served restaurants natively on Google's ordering page — peaking at <b>100K–110K orders/month</b>. In July 2024 Google ended native ordering, switching to a redirect-only model where restaurants set a "Preferred by Business" destination; that native channel dropped <b>to zero overnight</b>. I designed the recovery to fit the new model: a redirect "glue" mechanism, branded through ActiveMenus, that auto-detects takeout vs. delivery intent and passes context to the client's site via query params, minimizing clicks. Combined with lower rates and fewer steps than competitors' redirect links, it <b>recovered the channel to ~10K orders/month</b>.
       </p>
-      <p class="lede hidden" data-view="pm">
+      <p class="lede hidden" data-view="pm" data-sm="7">
         When Google ended native Food Ordering in July 2024 — shifting to a redirect-only model — a channel doing <b>100K+ orders/month collapsed to zero overnight</b>. As lead developer and project manager on the response, I scoped and delivered a redirect-based recovery — an ActiveMenus-branded glue mechanism that detects order intent and routes customers to the client's site in as few clicks as possible. Positioned on lower rates and a smoother flow than competitors, it <b>recovered the channel to ~10K orders/month</b>. A resilience-and-product-thinking story as much as a technical one.
-      </p>
+      </p><span class="show-more-wrap"><span class="show-more-btn" onclick="toggleSM(7,this)">Read more →</span></span>
       <div class="metrics">
         <div class="metric"><div class="n">100K<span class="accent">&rarr;</span>0</div><div class="l">channel loss (Google policy)</div></div>
         <div class="metric"><div class="n">~10K<span class="accent">/mo</span></div><div class="l">recovered volume</div></div>
@@ -650,6 +702,85 @@
   }, { threshold: 0.6 });
   if (!reduceMotion) {
     document.querySelectorAll('[data-count]').forEach(function(el) { co.observe(el); });
+  }
+
+  // ---- show more / show less (mobile) ----
+  function toggleSM(n, btn) {
+    // find the visible lede with this pair number
+    var all = document.querySelectorAll('[data-sm="' + n + '"]');
+    var lede = null;
+    for (var i = 0; i < all.length; i++) {
+      if (!all[i].classList.contains('hidden')) { lede = all[i]; break; }
+    }
+    if (!lede) return;
+    var expanded = lede.classList.toggle('expanded');
+    btn.textContent = expanded ? 'Show less ↑' : 'Read more →';
+  }
+
+  // ---- gyroscope tilt (mobile, no-hover devices) ----
+  if (!hasHover && !reduceMotion) {
+    var gyroActive = false;
+
+    function startGyro() {
+      if (typeof DeviceOrientationEvent !== 'undefined' &&
+          typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission().then(function(s) {
+          if (s === 'granted') listenGyro();
+        }).catch(function() {});
+      } else if (window.DeviceOrientationEvent) {
+        listenGyro();
+      }
+    }
+
+    function listenGyro() {
+      if (gyroActive) return;
+      gyroActive = true;
+      var cards = document.querySelectorAll('.case, .ew, .cardStat');
+      window.addEventListener('deviceorientation', function(e) {
+        var beta = e.beta || 0;
+        var gamma = e.gamma || 0;
+        var rx = Math.max(-8, Math.min(8, (beta - 40) * 0.2));
+        var ry = Math.max(-8, Math.min(8, gamma * 0.2));
+        cards.forEach(function(card) {
+          card.style.transform = 'perspective(800px) rotateX(' + (-rx) + 'deg) rotateY(' + ry + 'deg)';
+        });
+      }, true);
+    }
+
+    // auto-start on Android; iOS needs a tap first
+    if (typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission !== 'function') {
+      listenGyro();
+    } else {
+      // iOS — start on first tap anywhere
+      document.addEventListener('touchstart', function onFirstTouch() {
+        startGyro();
+        document.removeEventListener('touchstart', onFirstTouch);
+      }, { once: true });
+    }
+
+    // ---- tap glow (mobile) ----
+    document.querySelectorAll('.case, .ew, .cardStat').forEach(function(card) {
+      var glow = card.querySelector('.glow');
+      if (!glow) return;
+      card.addEventListener('touchstart', function(e) {
+        var t = e.touches[0];
+        var r = card.getBoundingClientRect();
+        var x = t.clientX - r.left;
+        var y = t.clientY - r.top;
+        glow.style.left = x + 'px';
+        glow.style.top = y + 'px';
+        glow.style.width = '20px';
+        glow.style.height = '20px';
+        glow.style.opacity = '1';
+        glow.style.transition = 'opacity 0.05s, width 0.55s cubic-bezier(.2,.7,.2,1), height 0.55s cubic-bezier(.2,.7,.2,1)';
+        setTimeout(function() {
+          glow.style.width = '340px';
+          glow.style.height = '340px';
+          glow.style.opacity = '0';
+        }, 10);
+      }, { passive: true });
+    });
   }
 </script>
 
