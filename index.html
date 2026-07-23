@@ -105,7 +105,7 @@
   .case:hover::before { opacity: 1; }
   .case-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
   .case h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
-  .case .tag { font-family: var(--mono); font-size: 11px; color: var(--text-3); white-space: nowrap; padding-top: 6px; }
+  .case .tag { font-family: var(--mono); font-size: 11px; color: var(--text-3); white-space: nowrap; padding-top: 6px; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
   .case .lede { font-size: 14.5px; color: var(--text-2); margin: 12px 0 18px; line-height: 1.7; text-align: justify; }
   .case .lede b { color: var(--text); font-weight: 600; }
 
@@ -207,16 +207,18 @@
     .bar { height: 52px; }
 
     /* description clamp on mobile */
-    .lede-wrap { display: block; }
-    .lede {
-      display: -webkit-box;
+    .case .lede {
+      display: -webkit-box !important;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 4;
       overflow: hidden;
       margin-bottom: 0 !important;
     }
-    .lede.expanded {
-      display: block;
+    .case .lede.hidden {
+      display: none !important;
+    }
+    .case .lede.expanded {
+      display: block !important;
       -webkit-line-clamp: unset;
       overflow: visible;
       margin-bottom: 0 !important;
@@ -224,11 +226,11 @@
     .subproj p:not(.hidden) {
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 4;
       overflow: hidden;
     }
     .subproj p.expanded {
-      display: block;
+      display: block !important;
       -webkit-line-clamp: unset;
       overflow: visible;
     }
