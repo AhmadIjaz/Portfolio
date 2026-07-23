@@ -947,12 +947,25 @@
     if (e.key === 'Escape') lbClose();
   });
   // swipe on mobile
-  var lbSwipeX = 0;
-  document.getElementById('lb-img-area').addEventListener('touchstart', function(e) { lbSwipeX = e.touches[0].clientX; }, { passive: true });
+  var lbSwipeX = 0, lbSwipeY = 0, lbSwipeActive = false;
+  document.getElementById('lb-img-area').addEventListener('touchstart', function(e) {
+    if (e.touches.length !== 1) { lbSwipeActive = false; return; }
+    lbSwipeActive = true;
+    lbSwipeX = e.touches[0].clientX;
+    lbSwipeY = e.touches[0].clientY;
+  }, { passive: true });
   document.getElementById('lb-img-area').addEventListener('touchend', function(e) {
-    var dx = e.changedTouches[0].clientX - lbSwipeX;
-    if (Math.abs(dx) > 50) { if (dx < 0) lbNext(); else lbPrev(); }
-  });
+    if (!lbSwipeActive || e.changedTouches.length !== 1) return;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - lbSwipeX;
+    var dy = t.clientY - lbSwipeY;
+    // Only count clear horizontal swipes (not pinch/pan)
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) {
+      if (dx < 0) lbNext();
+      else lbPrev();
+    }
+    lbSwipeActive = false;
+  }, { passive: true });
 
 
   // ---- profile photo overlay ----
