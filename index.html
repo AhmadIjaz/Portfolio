@@ -135,8 +135,15 @@
   .lb-nav:hover { background: rgba(255,255,255,0.12); }
   .lb-close { background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.12); border-radius: 6px; color: var(--text-2); width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s; }
   .lb-close:hover { border-color: rgba(255,80,80,0.4); color: #ff6060; }
-  .lb-img-area { background: #0c0d14; min-height: 280px; display: flex; align-items: center; justify-content: center; position: relative; touch-action: pan-y pinch-zoom;}
-  .lb-img-area img { max-height: 75vh; max-width: 100%; width: auto; margin: 0 auto; object-fit: contain; display: block; touch-action: pinch-zoom;}
+  .lb-img-area { background: #0c0d14; min-height: 280px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; touch-action: none; }
+  .lb-img-area img { max-height: 75vh; max-width: 100%; width: auto; margin: 0 auto; object-fit: contain; display: block; transition: transform 0.15s ease; transform-origin: 50% 50%; cursor: zoom-in; user-select: none; -webkit-user-drag: none; }
+  .lb-zoom-bar { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; background: rgba(10,11,15,0.75); backdrop-filter: blur(10px); border: 0.5px solid rgba(255,255,255,0.14); border-radius: 20px; padding: 5px 12px; z-index: 10; }
+  .lb-zoom-icon { display: flex; align-items: center; color: var(--text-3); flex-shrink: 0; }
+  .lb-zoom-sep { width: 0.5px; height: 14px; background: rgba(255,255,255,0.15); margin: 0 2px; }
+  .lb-zoom-btn { background: none; border: none; color: var(--text-2); width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 300; line-height: 1; transition: color 0.15s; user-select: none; flex-shrink: 0; }
+  .lb-zoom-btn:hover { color: var(--accent); }
+  .lb-zoom-level { font-family: var(--mono); font-size: 11px; color: var(--text-2); min-width: 34px; text-align: center; cursor: pointer; transition: color 0.15s; }
+  .lb-zoom-level:hover { color: var(--accent); }
   .lb-tag { position: absolute; top: 10px; left: 10px; background: var(--accent-soft); color: var(--accent); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 5px; }
   .lb-dots { display: flex; gap: 6px; justify-content: center; padding: 12px; border-top: 0.5px solid rgba(255,255,255,0.07); }
   .lb-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; transition: background 0.15s, transform 0.15s; }
@@ -630,6 +637,18 @@
       </div>
     </div>
     <div class="lb-img-area" id="lb-img-area">
+      <div class="lb-zoom-bar">
+        <div class="lb-zoom-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="9.5" y1="9.5" x2="13" y2="13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="lb-zoom-sep"></div>
+        <button class="lb-zoom-btn" onclick="lbZoomOut()" title="Zoom out">&#8722;</button>
+        <span class="lb-zoom-level" id="lb-zoom-level" onclick="lbZoomReset()" title="Reset zoom">100%</span>
+        <button class="lb-zoom-btn" onclick="lbZoomIn()" title="Zoom in">+</button>
+      </div>
       <span class="lb-tag" id="lb-tag"></span>
       <img id="lb-img" src="" alt="" />
     </div>
@@ -872,7 +891,17 @@
       { src: 'images/n8n-coding-assistant.png',  label: 'Coding Assistant'  },
       { src: 'images/n8n-RAG-workflow.png',  label: 'RAG Workflow' }
     ],
-    glue:     [],
+    glue:     [
+      { src: 'images/glue-landing-address-section.png', label: 'Landing Page (1/3) - Address Section' },
+      { src: 'images/glue-landing-download-section.png',  label: 'Landing Page (2/3) - App Download Section'  },
+      { src: 'images/glue-landing-howto-section.png',  label: 'Landing Page (3/3) - How To Order Section'  },
+      { src: 'images/glue-restaurants-listing.png',  label: 'Restaurants Page'  },
+      { src: 'images/glue-menu-items.png',  label: 'Menu Page'  },
+      { src: 'images/glue-checkout-1.png',  label: 'Checkout Page (1/2) - Details Section'  },
+      { src: 'images/glue-checkout-2.png',  label: 'Checkout Page (2/2) - Payment Section'  },
+      { src: 'images/glue-login-history.png',  label: 'Login Page - History Section' },
+      { src: 'images/glue-admin-settings.png',  label: 'Admin Dashboard (Pinch to Zoom) - Settings Section' },
+    ],
     ghl:      [],
     campaign: [],
     storak:   [],
@@ -919,10 +948,10 @@
     document.getElementById('lb-overlay').classList.add('open');
     lbRender();
   }
-  function lbClose() { document.getElementById('lb-overlay').classList.remove('open'); }
+  function lbClose() { document.getElementById('lb-overlay').classList.remove('open'); lbResetZoom(); }
   function lbMaybeClose(e) { if (e.target === document.getElementById('lb-overlay')) lbClose(); }
-  function lbNext() { var imgs = CARD_IMAGES[lbCard]; lbCur = (lbCur + 1) % imgs.length; lbRender(); }
-  function lbPrev() { var imgs = CARD_IMAGES[lbCard]; lbCur = (lbCur - 1 + imgs.length) % imgs.length; lbRender(); }
+  function lbNext() { var imgs = CARD_IMAGES[lbCard]; lbCur = (lbCur + 1) % imgs.length; lbResetZoom(); lbRender(); }
+  function lbPrev() { var imgs = CARD_IMAGES[lbCard]; lbCur = (lbCur - 1 + imgs.length) % imgs.length; lbResetZoom(); lbRender(); }
   function lbRender() {
     var imgs = CARD_IMAGES[lbCard];
     var d = imgs[lbCur];
@@ -945,29 +974,102 @@
     if (e.key === 'ArrowRight') lbNext();
     if (e.key === 'ArrowLeft') lbPrev();
     if (e.key === 'Escape') lbClose();
+    if (e.key === '+' || e.key === '=') lbZoomIn();
+    if (e.key === '-') lbZoomOut();
+    if (e.key === '0') lbZoomReset();
   });
   // swipe on mobile
+  // ---- zoom state ----
+  var lbZoom = 100;
+  function lbApplyZoom() {
+    var img = document.getElementById('lb-img');
+    img.style.transform = 'scale(' + (lbZoom / 100) + ')';
+    img.style.cursor = lbZoom > 100 ? 'zoom-out' : 'zoom-in';
+    var lvl = document.getElementById('lb-zoom-level');
+    if (lvl) lvl.textContent = lbZoom + '%';
+  }
+  function lbZoomIn()  { if (lbZoom < 1000) { lbZoom = Math.min(lbZoom + 25, 1000); lbApplyZoom(); } }
+  function lbZoomOut() { if (lbZoom > 100) { lbZoom = Math.max(lbZoom - 25, 100); lbApplyZoom(); } }
+  function lbZoomReset() {
+    lbZoom = 100;
+    var img = document.getElementById('lb-img');
+    if (img) { img.style.transformOrigin = '50% 50%'; }
+    lbApplyZoom();
+  }
+  function lbResetZoom() { lbZoomReset(); }
+
+  // click to toggle zoom
+  document.getElementById('lb-img-area').addEventListener('click', function(e) {
+    if (e.target.closest && e.target.closest('.lb-zoom-bar')) return;
+    var img = document.getElementById('lb-img');
+    var r = document.getElementById('lb-img-area').getBoundingClientRect();
+    img.style.transformOrigin = ((e.clientX-r.left)/r.width*100).toFixed(1)+'% '+((e.clientY-r.top)/r.height*100).toFixed(1)+'%';
+    lbZoom = lbZoom === 100 ? 200 : 100;
+    lbApplyZoom();
+  });
+
+  // pan on mouse move when zoomed
+  document.getElementById('lb-img-area').addEventListener('mousemove', function(e) {
+    if (lbZoom <= 100) return;
+    var img = document.getElementById('lb-img');
+    var r = document.getElementById('lb-img-area').getBoundingClientRect();
+    img.style.transformOrigin = ((e.clientX-r.left)/r.width*100).toFixed(1)+'% '+((e.clientY-r.top)/r.height*100).toFixed(1)+'%';
+  });
+
+  // scroll wheel zoom
+  document.getElementById('lb-img-area').addEventListener('wheel', function(e) {
+    e.preventDefault();
+    if (e.deltaY < 0) lbZoomIn(); else lbZoomOut();
+  }, { passive: false });
+
+  // ---- pinch-to-zoom (mobile) ----
+  var lbPinchDist = 0, lbPinchActive = false;
   var lbSwipeX = 0, lbSwipeY = 0, lbSwipeActive = false;
   document.getElementById('lb-img-area').addEventListener('touchstart', function(e) {
-    if (e.touches.length !== 1) { lbSwipeActive = false; return; }
-    lbSwipeActive = true;
-    lbSwipeX = e.touches[0].clientX;
-    lbSwipeY = e.touches[0].clientY;
+    if (e.touches.length === 2) {
+      lbSwipeActive = false;
+      lbPinchActive = true;
+      lbPinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    } else if (e.touches.length === 1) {
+      lbPinchActive = false;
+      lbSwipeActive = true;
+      lbSwipeX = e.touches[0].clientX;
+      lbSwipeY = e.touches[0].clientY;
+    }
   }, { passive: true });
+  document.getElementById('lb-img-area').addEventListener('touchmove', function(e) {
+    if (lbPinchActive && e.touches.length === 2) {
+      e.preventDefault();
+      var newDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      var delta = newDist - lbPinchDist;
+      if (Math.abs(delta) > 4) {
+        var img = document.getElementById('lb-img');
+        var r = document.getElementById('lb-img-area').getBoundingClientRect();
+        var cx = ((e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left) / r.width * 100;
+        var cy = ((e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top) / r.height * 100;
+        img.style.transformOrigin = cx.toFixed(1) + '% ' + cy.toFixed(1) + '%';
+        if (delta > 0) lbZoomIn(); else lbZoomOut();
+        lbPinchDist = newDist;
+      }
+    }
+  }, { passive: false });
   document.getElementById('lb-img-area').addEventListener('touchend', function(e) {
+    if (lbPinchActive) { lbPinchActive = false; return; }
     if (!lbSwipeActive || e.changedTouches.length !== 1) return;
     var t = e.changedTouches[0];
     var dx = t.clientX - lbSwipeX;
     var dy = t.clientY - lbSwipeY;
-    // Only count clear horizontal swipes (not pinch/pan)
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) {
-      if (dx < 0) lbNext();
-      else lbPrev();
+    if (lbZoom <= 100 && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) {
+      if (dx < 0) lbNext(); else lbPrev();
     }
     lbSwipeActive = false;
   }, { passive: true });
-
-
   // ---- profile photo overlay ----
   function openPhoto() {
     var ov = document.getElementById('photo-overlay');
