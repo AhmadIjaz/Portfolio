@@ -126,10 +126,10 @@
   .lb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 16px; }
   .lb-overlay.open { display: flex; }
   .lb-box { background: #141620; border: 0.5px solid rgba(255,255,255,0.14); border-radius: 16px; width: 100%; max-width: min(90vw, 80vw); overflow: hidden; }
-  .lb-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid rgba(255,255,255,0.08); }
-  .lb-head-title { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
+  .lb-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 0.5px solid rgba(255,255,255,0.08); gap: 10px; min-width: 0; }
+  .lb-head-title { font-family: var(--mono); font-size: 11px; color: var(--text-2); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lb-head-title b { color: var(--text); font-weight: 500; }
-  .lb-head-right { display: flex; align-items: center; gap: 8px; }
+  .lb-head-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
   .lb-count { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
   .lb-nav { background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.12); border-radius: 6px; color: var(--text); width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: background 0.15s; }
   .lb-nav:hover { background: rgba(255,255,255,0.12); }
@@ -992,6 +992,7 @@
   function lbZoomOut() { if (lbZoom > 100) { lbZoom = Math.max(lbZoom - 25, 100); lbApplyZoom(); } }
   function lbZoomReset() {
     lbZoom = 100;
+    lbOriginX = 50; lbOriginY = 50;
     var img = document.getElementById('lb-img');
     if (img) { img.style.transformOrigin = '50% 50%'; }
     lbApplyZoom();
@@ -1023,66 +1024,70 @@
   }, { passive: false });
 
   // ---- pinch-to-zoom (mobile) ----
-  var lbPinchDist = 0, lbPinchActive = false;
-  var lbSwipeX = 0, lbSwipeY = 0, lbSwipeActive = false;
+  // ---- touch: pan when zoomed, swipe when not, pinch to zoom ----
+  var lbOriginX = 50, lbOriginY = 50;
+  var lbTouch = { startX:0, startY:0, lastX:0, lastY:0, active:false, pinchDist:0, pinchActive:false };
+
   document.getElementById('lb-img-area').addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
-      lbSwipeActive = false;
-      lbPinchActive = true;
-      lbPinchDist = Math.hypot(
+      lbTouch.active = false;
+      lbTouch.pinchActive = true;
+      lbTouch.pinchDist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
     } else if (e.touches.length === 1) {
-      lbPinchActive = false;
-      lbSwipeActive = true;
-      lbSwipeX = e.touches[0].clientX;
-      lbSwipeY = e.touches[0].clientY;
+      lbTouch.pinchActive = false;
+      lbTouch.active = true;
+      lbTouch.startX = lbTouch.lastX = e.touches[0].clientX;
+      lbTouch.startY = lbTouch.lastY = e.touches[0].clientY;
     }
   }, { passive: true });
+
   document.getElementById('lb-img-area').addEventListener('touchmove', function(e) {
-    if (lbPinchActive && e.touches.length === 2) {
+    if (lbTouch.pinchActive && e.touches.length === 2) {
       e.preventDefault();
       var newDist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      var delta = newDist - lbPinchDist;
-      if (Math.abs(delta) > 4) {
+      var delta = newDist - lbTouch.pinchDist;
+      if (Math.abs(delta) > 3) {
         var img = document.getElementById('lb-img');
         var r = document.getElementById('lb-img-area').getBoundingClientRect();
-        var cx = ((e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left) / r.width * 100;
-        var cy = ((e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top) / r.height * 100;
-        img.style.transformOrigin = cx.toFixed(1) + '% ' + cy.toFixed(1) + '%';
+        lbOriginX = ((e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left) / r.width * 100;
+        lbOriginY = ((e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top) / r.height * 100;
+        img.style.transformOrigin = lbOriginX.toFixed(1) + '% ' + lbOriginY.toFixed(1) + '%';
         if (delta > 0) lbZoomIn(); else lbZoomOut();
-        lbPinchDist = newDist;
+        lbTouch.pinchDist = newDist;
       }
+    } else if (lbTouch.active && e.touches.length === 1 && lbZoom > 100) {
+      e.preventDefault();
+      var t = e.touches[0];
+      var dx = t.clientX - lbTouch.lastX;
+      var dy = t.clientY - lbTouch.lastY;
+      lbTouch.lastX = t.clientX;
+      lbTouch.lastY = t.clientY;
+      var scale = lbZoom / 100;
+      lbOriginX = Math.max(0, Math.min(100, lbOriginX - (dx / scale)));
+      lbOriginY = Math.max(0, Math.min(100, lbOriginY - (dy / scale)));
+      var img = document.getElementById('lb-img');
+      img.style.transformOrigin = lbOriginX.toFixed(1) + '% ' + lbOriginY.toFixed(1) + '%';
     }
   }, { passive: false });
+
   document.getElementById('lb-img-area').addEventListener('touchend', function(e) {
-    if (lbPinchActive) { lbPinchActive = false; return; }
-    if (!lbSwipeActive || e.changedTouches.length !== 1) return;
-    var t = e.changedTouches[0];
-    var dx = t.clientX - lbSwipeX;
-    var dy = t.clientY - lbSwipeY;
-    if (lbZoom <= 100 && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) {
+    if (lbTouch.pinchActive) { lbTouch.pinchActive = false; return; }
+    if (!lbTouch.active) return;
+    lbTouch.active = false;
+    if (lbZoom > 100) return;
+    var dx = e.changedTouches[0].clientX - lbTouch.startX;
+    var dy = e.changedTouches[0].clientY - lbTouch.startY;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) {
       if (dx < 0) lbNext(); else lbPrev();
     }
-    lbSwipeActive = false;
+    lbTouch.active = false;
   }, { passive: true });
-  // ---- profile photo overlay ----
-  function openPhoto() {
-    var ov = document.getElementById('photo-overlay');
-    var role = document.getElementById('photo-role');
-    if (role) role.textContent = document.getElementById('hero-role').textContent;
-    ov.style.display = 'flex';
-  }
-  function closePhoto() {
-    document.getElementById('photo-overlay').style.display = 'none';
-  }
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closePhoto();
-  });
 
 </script>
 
