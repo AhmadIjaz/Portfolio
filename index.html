@@ -27,7 +27,7 @@
     --maxw: 1080px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: clip; }
   body {
     background:
       radial-gradient(1100px 600px at 75% -5%, rgba(91,140,255,0.10), transparent 60%),
@@ -38,7 +38,7 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     font-size: 16px;
-    overflow-x: hidden;
+    overflow-y: visible;
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -69,12 +69,25 @@
 
   /* hero */
   .hero { padding: 90px 0 54px; }
+  main.wrap > section.hero { pointer-events: none; }
+  .hero .heroGrid { pointer-events: auto; }
+  #hero3d { position: fixed; top: 0; right: -60px; width: 46vw; max-width: 620px; height: 100vh; z-index: 0; opacity: 0; pointer-events: none; transition: opacity 1.2s ease; -webkit-mask-image: linear-gradient(100deg, transparent 15%, rgba(0,0,0,0.55) 45%, black 72%); mask-image: linear-gradient(100deg, transparent 15%, rgba(0,0,0,0.55) 45%, black 72%); }
+  #hero3d.loaded { opacity: 1; pointer-events: auto; }
+  #hero3d canvas { width: 100%; height: 100%; display: block; touch-action: pan-y; }
+  @media (max-width: 900px) {
+    #hero3d { width: 72vw; height: 58vh; right: -32px; -webkit-mask-image: linear-gradient(100deg, transparent 18%, rgba(0,0,0,0.5) 48%, black 76%); mask-image: linear-gradient(100deg, transparent 18%, rgba(0,0,0,0.5) 48%, black 76%); }
+    #hero3d.loaded { opacity: 0.85; }
+  }
+  @media (prefers-reduced-motion: reduce) { #hero3d { display: none !important; } }
   .kicker { display: inline-flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); margin-bottom: 30px; }
   .kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); animation: pulse 2.6s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{box-shadow:0 0 0 4px var(--accent-soft);} 50%{box-shadow:0 0 0 7px transparent;} }
 
   .hero h1 { font-family: var(--display); font-weight: 900; font-size: clamp(44px, 8vw, 92px); line-height: 0.92; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 6px; }
   .hero h1 .g { background: linear-gradient(105deg, var(--grad-a), var(--grad-b) 60%, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero h1 .wr { position: relative; display: inline-block; vertical-align: top; overflow: hidden; height: 0.92em; }
+  .hero h1 .wr-w { position: absolute; left: 0; top: 0; opacity: 0; transform: translateY(0.22em); transition: opacity 0.5s cubic-bezier(.2,.7,.2,1), transform 0.5s cubic-bezier(.2,.7,.2,1); white-space: nowrap; background: linear-gradient(105deg, var(--grad-a), var(--grad-b) 60%, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero h1 .wr-w.wr-active { opacity: 1; transform: translateY(0); }
   .hero .sub { font-size: 17px; color: var(--text-2); margin: 18px 0 0; letter-spacing: 0.01em; }
   .hero .sub b { color: var(--text); font-weight: 600; }
 
@@ -200,9 +213,18 @@
   .hidden { display: none !important; }
 
   /* --- interaction effects --- */
-  #progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 100; background: linear-gradient(90deg, var(--grad-a), var(--accent)); transition: width 0.1s linear; }
+  #progress { position: fixed; top: 64px; left: 0; height: 3px; width: 0; z-index: 100; background: linear-gradient(90deg, var(--grad-a), var(--accent)); transition: width 0.1s linear; }
+  .vid-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 9998; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .vid-overlay.open { display: flex; }
+  .vid-box { position: relative; width: 100%; max-width: 820px; border-radius: 14px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.6); background: #0a0b0f; }
+  .vid-box iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
+  .vid-close { position: absolute; top: 10px; right: 10px; background: rgba(10,11,15,0.8); border: 0.5px solid rgba(255,255,255,0.14); border-radius: 6px; color: #a4a7b4; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; z-index: 1; transition: all 0.15s; }
+  .vid-close:hover { border-color: rgba(255,80,80,0.4); color: #ff6060; }
+  #intro-video-btn:hover { background: rgba(87,227,160,0.08) !important; border-color: var(--accent) !important; }
   #spotlight { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 30%), rgba(91,140,255,0.08), transparent 65%); opacity: 0; transition: opacity 0.4s; }
-  header, main, footer { position: relative; z-index: 1; }
+  main, footer { position: relative; z-index: 1; }
+  main.wrap { pointer-events: none; }
+  main.wrap > section { pointer-events: auto; }
 
   /* card glow + tilt */
   .case, .ew, .cardStat { transform-style: preserve-3d; will-change: transform; }
@@ -242,6 +264,7 @@
     .brand .who b { font-size: 12px; }
     .brand .who span { font-size: 10px; }
     .bar { height: 52px; }
+    #progress { top: 52px; }
 
     /* fade-out instead of ellipsis — keeps justify, hides ... */
     .case .lede { -webkit-line-clamp: unset !important; overflow: hidden; position: relative; }
@@ -316,6 +339,7 @@
 <body>
 <div id="progress"></div>
 <div id="spotlight"></div>
+<div id="hero3d" aria-hidden="true"><canvas id="hero3d-canvas"></canvas></div>
 
 <header>
   <div class="wrap bar">
@@ -323,6 +347,10 @@
       <div class="mark avatar" onclick="openPhoto()" title="View photo" style="background:none;padding:0;overflow:hidden;cursor:pointer;border-radius:8px;"><img src="data:image/jpeg;base64,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" alt="Ahmad Ijaz" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:8px;display:block;" /></div>
       <div class="who"><b>Ahmad Ijaz</b><span id="brand-role">Lead Software Engineer</span></div>
     </div>
+    <button id="intro-video-btn" onclick="vidOpen()" style="display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--accent);border:0.5px solid rgba(87,227,160,0.35);border-radius:20px;padding:5px 12px;background:none;cursor:pointer;transition:background 0.2s,border-color 0.2s;white-space:nowrap;flex-shrink:0;">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6.25" stroke="currentColor" stroke-width="1.2"/><polygon points="5.5,4.5 10,7 5.5,9.5" fill="currentColor"/></svg>
+      Watch intro
+    </button>
   </div>
 </header>
 
@@ -331,8 +359,8 @@
   <!-- HERO -->
   <section class="hero">
     <div class="kicker reveal"><span class="dot"></span><span>available</span></div>
-    <h1 class="hero-h1" data-view="eng"><span class="hw">I</span> <span class="hw">build</span> <span class="hw">the</span><br><span class="hw g">systems</span> <span class="hw">that</span> <span class="hw">scale.</span></h1>
-    <h1 class="hero-h1 hidden" data-view="pm"><span class="hw">I</span> <span class="hw">ship</span> <span class="hw">the</span><br><span class="hw g">products</span> <span class="hw">that</span> <span class="hw">scale.</span></h1>
+    <h1 class="hero-h1" data-view="eng"><span class="hw">I</span> <span class="hw">build</span> <span class="hw">the</span><br><span class="hw g wr" data-words="systems,integrations,automations,services">systems</span><br><span class="hw">that</span> <span class="hw">scale.</span></h1>
+    <h1 class="hero-h1 hidden" data-view="pm"><span class="hw">I</span> <span class="hw">ship</span> <span class="hw">the</span><br><span class="hw g wr" data-words="products,integrations,automations,releases">products</span><br><span class="hw">that</span> <span class="hw">scale.</span></h1>
     <p class="sub reveal">Ahmad Ijaz <span style="color:var(--text-3)">—</span> <b id="hero-role">Lead Software Engineer</b><span id="hero-role-tail"></span></p>
 
     <div class="heroGrid">
@@ -675,7 +703,28 @@
   </div>
 </footer>
 
+<div class="vid-overlay" id="vid-overlay" onclick="if(event.target===this)vidClose()">
+  <div class="vid-box">
+    <button class="vid-close" onclick="vidClose()">&#10005;</button>
+    <iframe id="vid-frame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
+</div>
+
 <script>
+  // ---- intro video ----
+  var LSE_VID = 'https://www.loom.com/embed/65197f292401408aa3373c1c7aa93f54?autoplay=1';
+  var TPM_VID = 'https://www.loom.com/embed/787e0fa9a42c4641bb2107bdeb410618?autoplay=1';
+  var currentVidUrl = LSE_VID;
+  function vidOpen() {
+    document.getElementById('vid-frame').src = currentVidUrl;
+    document.getElementById('vid-overlay').classList.add('open');
+  }
+  function vidClose() {
+    document.getElementById('vid-overlay').classList.remove('open');
+    document.getElementById('vid-frame').src = '';
+  }
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') vidClose(); });
+
   (function () {
     // ---- read + normalize URL params ----
     var params = new URLSearchParams(location.search);
@@ -690,6 +739,7 @@
 
     var isEng = temp === 'LSE';
     var view = isEng ? 'eng' : 'pm';
+    currentVidUrl = (temp === 'PM') ? TPM_VID : LSE_VID;
 
     // ---- show the right view's content ----
     document.querySelectorAll('[data-view]').forEach(function (el) {
@@ -741,6 +791,56 @@
     if (!h1) return;
     h1.classList.add('play');
     h1.querySelectorAll('.hw').forEach(function(w, i){ w.style.animationDelay = (0.15 + i * 0.07) + 's'; });
+  })();
+
+  // hero headline word rotator (cycles the highlighted word through variant-specific alternatives)
+  (function(){
+    var el = document.querySelector('.hero-h1:not(.hidden) .wr');
+    if (!el) return;
+    var words = (el.getAttribute('data-words') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    if (words.length < 2) return;
+
+    el.textContent = '';
+    var spans = words.map(function(w, i){
+      var s = document.createElement('span');
+      s.className = 'wr-w' + (i === 0 ? ' wr-active' : '');
+      s.textContent = w;
+      el.appendChild(s);
+      return s;
+    });
+
+    function measure() {
+      var maxW = 0;
+      spans.forEach(function(s){
+        var prevPos = s.style.position, prevVis = s.style.visibility;
+        s.style.position = 'static';
+        s.style.visibility = 'hidden';
+        var r = s.getBoundingClientRect();
+        maxW = Math.max(maxW, r.width);
+        s.style.position = prevPos;
+        s.style.visibility = prevVis;
+      });
+      el.style.width = Math.ceil(maxW) + 'px';
+    }
+    measure();
+
+    if (reduceMotion) return;
+
+    var resizeTimer;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(measure, 150);
+    });
+
+    var idx = 0;
+    setTimeout(function(){
+      setInterval(function(){
+        var next = (idx + 1) % spans.length;
+        spans[idx].classList.remove('wr-active');
+        spans[next].classList.add('wr-active');
+        idx = next;
+      }, 2600);
+    }, 1200);
   })();
 
   // scroll progress bar
@@ -1089,6 +1189,58 @@
     lbTouch.active = false;
   }, { passive: true });
 
+  // ---- profile photo overlay ----
+  function openPhoto() {
+    var ov = document.getElementById('photo-overlay');
+    var role = document.getElementById('photo-role');
+    if (role) role.textContent = document.getElementById('hero-role').textContent;
+    ov.style.display = 'flex';
+  }
+  function closePhoto() {
+    document.getElementById('photo-overlay').style.display = 'none';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closePhoto();
+  });
+
+</script>
+
+<script type="module">
+  (function () {
+    var container = document.getElementById('hero3d');
+    if (!container) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var canvas = document.getElementById('hero3d-canvas');
+    container.addEventListener('wheel', function (e) { e.stopPropagation(); }, { capture: true, passive: true });
+    import('https://cdn.jsdelivr.net/npm/@splinetool/runtime@1.12.98/build/runtime.js')
+      .then(function (mod) {
+        var app = new mod.Application(canvas);
+        return app.load('https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode');
+      })
+      .then(function () {
+        container.classList.add('loaded');
+        window.addEventListener('pointermove', function (e) {
+          if (e.__hero3dForwarded) return;
+          if (e.target === canvas) return;
+          if (e.pointerType && e.pointerType !== 'mouse') return;
+          var evt = new PointerEvent('pointermove', {
+            clientX: e.clientX,
+            clientY: e.clientY,
+            bubbles: true,
+            cancelable: true,
+            pointerType: e.pointerType || 'mouse'
+          });
+          Object.defineProperty(evt, 'pageX', { value: e.clientX + window.scrollX, configurable: true });
+          Object.defineProperty(evt, 'pageY', { value: e.clientY + window.scrollY, configurable: true });
+          evt.__hero3dForwarded = true;
+          canvas.dispatchEvent(evt);
+        });
+      })
+      .catch(function (err) {
+        console.warn('Hero 3D background failed to load:', err);
+      });
+  })();
 </script>
 
 </body>
