@@ -1277,6 +1277,30 @@
           evt.__hero3dForwarded = true;
           canvas.dispatchEvent(evt);
         });
+
+        function forwardTouch(type, e) {
+          var evt = new PointerEvent(type, {
+            clientX: e.clientX,
+            clientY: e.clientY,
+            pointerId: e.pointerId,
+            pointerType: 'touch',
+            isPrimary: e.isPrimary,
+            bubbles: true,
+            cancelable: true
+          });
+          Object.defineProperty(evt, 'pageX', { value: e.clientX + window.scrollX, configurable: true });
+          Object.defineProperty(evt, 'pageY', { value: e.clientY + window.scrollY, configurable: true });
+          evt.__hero3dForwarded = true;
+          canvas.dispatchEvent(evt);
+        }
+        ['pointerdown', 'pointermove', 'pointerup', 'pointercancel'].forEach(function (type) {
+          window.addEventListener(type, function (e) {
+            if (e.__hero3dForwarded) return;
+            if (e.target === canvas) return;
+            if (e.pointerType !== 'touch') return;
+            forwardTouch(type, e);
+          }, { passive: true });
+        });
       })
       .catch(function (err) {
         console.warn('Hero 3D background failed to load:', err);
