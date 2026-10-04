@@ -781,6 +781,15 @@
     if (brandEl) brandEl.textContent = shown;
     if (footerEl) footerEl.textContent = shown;
     document.title = 'Ahmad Ijaz — ' + shown;
+
+    // ---- /intro deep link: open the video straight away ----
+    if (clean(params.get('type')).toLowerCase() === 'intro' || params.has('intro')) {
+      params.delete('type');
+      params.delete('intro');
+      var qs = params.toString();
+      history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+      vidOpen();
+    }
   })();
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
